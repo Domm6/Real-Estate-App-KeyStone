@@ -79,7 +79,7 @@ export async function login() {
 
             // Verify that the session was created successfully
             if (!session) {
-                throw new Error("Failed to login")
+                throw new Error("Failed to create a session")
             }
 
             // Return true to indicate successful login
@@ -91,5 +91,36 @@ export async function login() {
         console.error(error);
         // Return false to indicate failed login
         return false;
+    }
+}
+
+// gets info about current user
+export async function logout() {
+    try {
+        await account.deleteSession('current');
+        return true;
+    } catch (error) {
+        console.error(error)
+        return false;
+    }
+}
+
+export async function getCurrentUser() {
+    try {
+        const response = await account.get();
+
+        // get users initals for avatar
+        if (response.$id) {
+            const userAvatar = avatar.getInitials(response.name)
+            return {
+                ...response,
+                avatar: userAvatar.toString()
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 }
